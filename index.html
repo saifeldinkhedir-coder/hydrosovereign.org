@@ -42,19 +42,42 @@ function nativeShare() {
 }
 
 function copyLink() {
-  const url = 'https://saifeldinkhedir-coder.github.io/hydrosovereign.org/';
-  const url = 'https://hydrosovereign.org';
-  navigator.clipboard.writeText(url).then(() => {
-    const b1 = document.getElementById('copy-btn');
-    const b2 = document.getElementById('copy-btn-footer');
-    [b1, b2].forEach(b => {
-      if (!b) return;
-      const orig = b.innerHTML;
-      b.innerHTML = b.tagName === 'BUTTON' && b.id === 'copy-btn'
-        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#68D391" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
-        : '✓ Copied!';
-      b.style.background = b.id === 'copy-btn' ? '#276749' : 'rgba(39,103,73,.4)';
-      setTimeout(() => { b.innerHTML = orig; b.style.background = ''; }, 2500);
+  var url = 'https://saifeldinkhedir-coder.github.io/hydrosovereign.org/';
+  var btn1 = document.getElementById('copy-btn');
+  var btn2 = document.getElementById('copy-btn-footer');
+  function markCopied() {
+    if (btn1) { btn1.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg><span class="sbl">✓</span>'; btn1.style.background='#276749'; }
+    if (btn2) { btn2.textContent = '✓ Copied!'; btn2.style.background='rgba(39,103,73,.5)'; }
+    setTimeout(function() {
+      if (btn1) { btn1.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span class="sbl">url</span>'; btn1.style.background=''; }
+      if (btn2) { btn2.textContent = 'Copy Link'; btn2.style.background=''; }
+    }, 2500);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(markCopied).catch(function() {
+      fallbackCopy(url);
+    });
+  } else {
+    fallbackCopy(url);
+  }
+}
+function fallbackCopy(url) {
+  var ta = document.createElement('textarea');
+  ta.value = url;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  try {
+    document.execCommand('copy');
+    var btn1 = document.getElementById('copy-btn');
+    var btn2 = document.getElementById('copy-btn-footer');
+    if (btn1) { btn1.style.background='#276749'; setTimeout(function(){btn1.style.background='';},2500); }
+    if (btn2) { btn2.textContent='✓ Copied!'; setTimeout(function(){btn2.textContent='Copy Link';},2500); }
+  } catch(e) {
+    window.prompt('Copy this link (Ctrl+C):', url);
+  }
+  document.body.removeChild(ta);
+}, 2500);
     });
   }).catch(() => {
     prompt('Copy this link:', url);
@@ -1302,55 +1325,28 @@ window.addEventListener('scroll',()=>{
 
 // ── CONTACT FORM ──────────────────────────────────────────
 function submitForm() {
-  const n = document.getElementById('cf-n').value.trim();
-  const e = document.getElementById('cf-e').value.trim();
-  const t = document.getElementById('cf-t').value;
-  const s = document.getElementById('cf-s').value.trim();
-  const m = document.getElementById('cf-m').value.trim();
+  var n = (document.getElementById('cf-n')||{}).value||'';
+  var e = (document.getElementById('cf-e')||{}).value||'';
+  var t = (document.getElementById('cf-t')||{}).value||'';
+  var s = (document.getElementById('cf-s')||{}).value||'';
+  var m = (document.getElementById('cf-m')||{}).value||'';
+  n=n.trim(); e=e.trim(); m=m.trim();
 
-  // Validation
   if (!n) { showFormMsg('Please enter your name.', false); return; }
-  if (!e || !e.includes('@')) { showFormMsg('Please enter a valid email address.', false); return; }
+  if (!e || e.indexOf('@')<0) { showFormMsg('Please enter a valid email.', false); return; }
   if (!m) { showFormMsg('Please enter your message.', false); return; }
 
-  const btn = document.querySelector('[onclick="submitForm()"]');
-  const origTxt = btn ? btn.textContent : 'Send Message';
-  if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+  var subject = encodeURIComponent((s||'HydroSovereign Enquiry') + ' — from ' + n);
+  var body = encodeURIComponent(
+    'Name: ' + n + '\n' +
+    'Email: ' + e + '\n' +
+    'Role: ' + (t||'Not specified') + '\n\n' +
+    m
+  );
 
-  // Build full message
-  const fullMsg = `Name: ${n}\nEmail: ${e}\nRole: ${t || 'Not specified'}\n\n${m}`;
-
-  // Use Formspree endpoint — works immediately, just needs free account
-  fetch('https://formspree.io/f/contact@hydrosovereign.org', {
-    method: 'POST',
-    body: JSON.stringify({
-      name: n,
-      email: e,
-      role: t || 'Not specified',
-      subject: (s || 'HydroSovereign Enquiry') + ' — from ' + n,
-      message: fullMsg,
-      _replyto: e
-    }),
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' }
-  })
-  .then(r => r.json())
-  .then(data => {
-    if (btn) { btn.disabled = false; btn.textContent = origTxt; }
-    if (data.ok || data.success || (data.next && !data.error)) {
-      showFormMsg('✅ Message sent successfully! We will reply within 48 hours.', true);
-      ['cf-n','cf-e','cf-t','cf-s','cf-m'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-      });
-    } else {
-      // Formspree requires account — open email client as reliable fallback
-      openMailto(n, e, t, s, m);
-    }
-  })
-  .catch(() => {
-    if (btn) { btn.disabled = false; btn.textContent = origTxt; }
-    openMailto(n, e, t, s, m);
-  });
+  // Open email client — works 100% on all devices
+  window.location.href = 'mailto:saifeldinkhedir@gmail.com?subject=' + subject + '&body=' + body;
+  showFormMsg('📧 Opening your email app... Your message is ready to send!', true);
 }
 
 function openMailto(n, e, t, s, m) {
