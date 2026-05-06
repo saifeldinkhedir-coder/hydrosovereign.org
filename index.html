@@ -43,22 +43,35 @@ function nativeShare() {
 
 function copyLink(){
   var url='https://saifeldinkhedir-coder.github.io/hydrosovereign.org/';
-  var b=document.getElementById('copy-btn')||document.getElementById('cbtn');
-  var ic=document.getElementById('copy-icon')||document.getElementById('cic');
-  var bf=document.getElementById('copy-btn-f')||document.getElementById('copy-btn-footer');
-  function ok(){
-    if(b)b.style.background='#276749';
-    if(ic)ic.innerHTML='<polyline points="4 12 9 17 20 6" stroke="#68D391" stroke-width="2.8" fill="none"/>';
-    if(bf){bf.textContent='\u2713 Copied!';bf.style.background='rgba(39,103,73,.5)';}
+  var btn  = document.getElementById('copy-btn');
+  var icon = document.getElementById('copy-icon');
+  var btnf = document.getElementById('copy-btn-footer');
+  function onOK(){
+    if(btn)  btn.style.background  = '#276749';
+    if(icon) icon.innerHTML = '<polyline points="4 12 9 17 20 6" stroke="#68D391" stroke-width="2.5" fill="none"/>';
+    if(btnf){ btnf.textContent='✓ Copied!'; btnf.style.background='rgba(39,103,73,.5)'; }
     setTimeout(function(){
-      if(b)b.style.background='';
-      if(ic)ic.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
-      if(bf){bf.textContent='Copy Link';bf.style.background='';}
-    },3000);
+      if(btn)  btn.style.background  = '';
+      if(icon) icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+      if(btnf){ btnf.textContent='Copy Link'; btnf.style.background=''; }
+    }, 3000);
   }
-  if(navigator.clipboard&&window.isSecureContext){
-    navigator.clipboard.writeText(url).then(ok).catch(function(){leg(url,ok);});
-  }else{leg(url,ok);}
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(url).then(onOK).catch(function(){ legCopy(url,onOK); });
+  } else {
+    legCopy(url,onOK);
+  }
+}
+function legCopy(url,cb){
+  var ta = document.createElement('textarea');
+  ta.value = url;
+  ta.setAttribute('readonly','');
+  ta.style.cssText = 'position:fixed;top:0;left:0;width:2em;height:2em;opacity:0.01;z-index:9999';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select(); ta.setSelectionRange(0,99999);
+  try{ document.execCommand('copy'); if(cb)cb(); }
+  catch(e){ window.prompt('Copy this link (Ctrl+C / Cmd+C):', url); }
+  document.body.removeChild(ta);
 }
 function leg(url,cb){
   var t=document.createElement('textarea');
@@ -513,7 +526,7 @@ footer{background:var(--navy-d);border-top:1px solid rgba(255,255,255,.06);paddi
     <span class="sbl">wa</span>
   </a>
   <button onclick="copyLink()" class="share-btn share-lk" title="Copy link" aria-label="Copy website link" id="copy-btn">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    <svg id="copy-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
     <span class="sbl">url</span>
   </button>
 </div>
@@ -1319,9 +1332,11 @@ function submitForm(){
   if(!n){alert('Please enter your name.');return;}
   if(!e||e.indexOf('@')<0){alert('Please enter a valid email address.');return;}
   if(!m){alert('Please write your message.');return;}
-  var sub=encodeURIComponent((s||'HydroSovereign Enquiry')+' — from '+n);
+  var sub=encodeURIComponent((s||'HydroSovereign Enquiry')+' from '+n);
   var body=encodeURIComponent('Name: '+n+'\nEmail: '+e+'\nRole: '+(t||'Not specified')+'\n\n'+m);
-  window.location.href='mailto:saifeldinkhedir@gmail.com?subject='+sub+'&body='+body;
+  var link='mailto:saifeldinkhedir@gmail.com?subject='+sub+'&body='+body;
+  var opened=window.open(link,'_self');
+  if(!opened){window.location.href=link;}
 }
 
 function openMailto(n, e, t, s, m) {
