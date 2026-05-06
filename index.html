@@ -21,16 +21,24 @@
 function doCopy(){
   var url='https://saifeldinkhedir-coder.github.io/hydrosovereign.org/';
   var b=document.getElementById('cbtn');
-  var ic=document.getElementById('cicon');
+  var ic=document.getElementById('cic');
   function ok(){
-    if(ic)ic.innerHTML='<polyline points="4 12 9 17 20 6" stroke="#68D391" stroke-width="2.8" fill="none"/>';
     if(b)b.style.background='#276749';
+    if(ic)ic.innerHTML='<polyline points="4 12 9 17 20 6" stroke="#68D391" stroke-width="2.8" fill="none"/>';
     setTimeout(function(){
-      if(ic)ic.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
-      if(b)b.style.background='';
+      if(b)b.style.background='#1a1a2e';
+      if(ic)ic.innerHTML='<rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\"/><path d=\"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\"/>';
     },3000);
   }
-  if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(url).then(ok).catch(function(){leg(url,ok)});}else{leg(url,ok);}
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(url).then(ok).catch(function(){leg(url,ok)});
+  else leg(url,ok);
+}
+function leg(url,cb){
+  var t=document.createElement('textarea');
+  t.value=url;t.style.cssText='position:fixed;top:0;left:0;opacity:0.01;z-index:9999';
+  document.body.appendChild(t);t.focus();t.select();
+  try{document.execCommand('copy');cb();}catch(e){window.prompt('Copy link:',url);}
+  document.body.removeChild(t);
 }
 function leg(url,cb){
   var t=document.createElement('textarea');
