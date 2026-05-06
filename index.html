@@ -716,6 +716,13 @@ footer{background:var(--navy-d);border-top:1px solid rgba(255,255,255,.06);paddi
 
 <main id="main">
 <!-- SHARE BAR -->
+<div style="position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:200;display:flex;flex-direction:column;gap:10px">
+  <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsaifeldinkhedir-coder.github.io%2Fhydrosovereign.org%2F" target="_blank" rel="noopener" style="width:44px;height:44px;border-radius:50%;background:#0A66C2;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,.25)" title="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
+  <a href="https://api.whatsapp.com/send?text=https%3A%2F%2Fsaifeldinkhedir-coder.github.io%2Fhydrosovereign.org%2F" target="_blank" rel="noopener" style="width:44px;height:44px;border-radius:50%;background:#25D366;color:#fff;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 2px 12px rgba(0,0,0,.25)" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
+  <button id="cbtn" onclick="doCopy()" style="width:44px;height:44px;border-radius:50%;background:#1a1a2e;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,.25)" title="Copy link"><svg id="cic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+</div>
+
+<!-- SHARE BAR -->
 <div class="share-bar" aria-label="Share">
   <a href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fsaifeldinkhedir-coder.github.io%2Fhydrosovereign.org%2F" target="_blank" rel="noopener noreferrer" class="share-btn share-li" title="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg></a>
   <a href="https://api.whatsapp.com/send?text=https%3A%2F%2Fsaifeldinkhedir-coder.github.io%2Fhydrosovereign.org%2F" target="_blank" rel="noopener noreferrer" class="share-btn share-wa" title="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></a>
@@ -1549,6 +1556,42 @@ window.addEventListener('DOMContentLoaded', async () => {
     if(newsStat) newsStat.textContent = `🌍 ${total}+ downloads · 20 countries · 5 ratings`;
   }
 });
+
+function doCopy(){
+  var url='https://saifeldinkhedir-coder.github.io/hydrosovereign.org/';
+  var b=document.getElementById('cbtn');
+  var ic=document.getElementById('cic');
+  function ok(){
+    if(b)b.style.background='#276749';
+    if(ic)ic.innerHTML='<polyline points="4 12 9 17 20 6" stroke="#68D391" stroke-width="2.8" fill="none"/>';
+    setTimeout(function(){
+      if(b)b.style.background='#1a1a2e';
+      if(ic)ic.innerHTML='<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>';
+    },3000);
+  }
+  if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(url).then(ok).catch(function(){leg(url,ok)});
+  else leg(url,ok);
+}
+function leg(url,cb){
+  var t=document.createElement('textarea');
+  t.value=url;t.style.cssText='position:fixed;top:0;left:0;opacity:0.01;z-index:9999';
+  document.body.appendChild(t);t.focus();t.select();
+  try{document.execCommand('copy');cb();}catch(e){window.prompt('Copy:',url);}
+  document.body.removeChild(t);
+}
+function submitForm(){
+  var n=((document.getElementById('cf-n')||{}).value||'').trim();
+  var e=((document.getElementById('cf-e')||{}).value||'').trim();
+  var t=(document.getElementById('cf-t')||{}).value||'';
+  var s=((document.getElementById('cf-s')||{}).value||'').trim();
+  var m=((document.getElementById('cf-m')||{}).value||'').trim();
+  if(!n){alert('Please enter your name.');return;}
+  if(!e||e.indexOf('@')<0){alert('Please enter a valid email.');return;}
+  if(!m){alert('Please write your message.');return;}
+  var sub=encodeURIComponent((s||'HydroSovereign')+' from '+n);
+  var body=encodeURIComponent('Name: '+n+'\nEmail: '+e+'\nRole: '+(t||'N/A')+'\n\n'+m);
+  window.location.href='mailto:saifeldinkhedir@gmail.com?subject='+sub+'&body='+body;
+}
 </script>
 </body>
 </html>
